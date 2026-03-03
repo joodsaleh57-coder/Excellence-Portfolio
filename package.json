@@ -1,0 +1,29 @@
+{
+  "name": "excellence-portfolio-extension",
+  "version": "1.0.0",
+  "description": "Chrome Extension for capturing evidence and exporting reports from Madrasati and Noor platforms",
+  "main": "mock-api-server.js",
+  "scripts": {
+    "start": "node mock-api-server.js",
+    "dev": "nodemon mock-api-server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "chrome-extension",
+    "education",
+    "evidence-capture",
+    "madrasati",
+    "noor"
+  ],
+  "author": "Excellence Portfolio Team",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "multer": "^1.4.5-lts.1",
+    "jsonwebtoken": "^9.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

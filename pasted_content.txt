@@ -1,0 +1,129 @@
+ Senior يبني Chrome Extension (Manifest V3) باسم:
+"Excellence Portfolio – ملف التميز الرقمي"
+
+الهدف الأساسي:
+تمكين المدرسة الحكومية من جمع الشواهد بسرعة أثناء العمل داخل منصتي "مدرستي" و"نور"، وربط الشاهد مباشرة بمؤشر/مجال/خطة تحسين، ثم تصدير مخرجات رسمية PDF/Word جاهزة للطباعة.
+
+مرجعية المتطلبات (ملزمة):
+- امتداد كروم يعمل داخل مواقع محددة (مدرستي + نور).
+- Side Panel تحتوي تبويبات: Dashboard / Capture Evidence / Indicators / Tasks / Evidence Center / Export / Settings.
+- زر عائم Floating Button داخل الصفحات "Add Evidence" لفتح الالتقاط السريع.
+- الالتقاط يجب أن يكون سريع ويقلل خطوات جمع الشاهد.
+- يجب توليد تقارير PDF منظمة دون مغادرة المنصة.
+- ممنوع في MVP: Deep Permission Customization داخل الامتداد + AI Auto-classification + Integrations خارجية إضافية (إلا مصادقة الدخول).
+
+النطاق (MVP):
+1) Extension Architecture (MV3):
+- manifest.json (Manifest V3)
+- service worker (background) لإدارة الأحداث، auth token، وعمليات التصدير
+- content scripts على نطاقات مدرستي/نور فقط لإظهار الزر العائم وجمع metadata (URL + Page Title + Timestamp)
+- Side Panel UI (RTL عربي 100%) + Popup بسيط للحالة وتسجيل الدخول
+- تخزين محلي Offline-first للعمليات السريعة: IndexedDB أو chrome.storage.local (queue) ثم sync عند توفر الإنترنت
+
+2) Authentication:
+- شاشة تسجيل دخول داخل Side Panel:
+  (email + password) أو OAuth إن توفر
+- بعد الدخول: حفظ JWT/Session token بشكل آمن في chrome.storage (مع آلية refresh بسيطة)
+- ربط المستخدم بمدرسته (Tenant) + دوره (Leader / Coordinator / Teacher / Counselor / Activity Leader / Deputy) من الـBackend
+- الامتداد لا ينشئ صلاحيات مخصصة؛ فقط يطبق ما يأتي من الـBackend
+
+3) Core Workflow (التدفق الأساسي):
+A) المستخدم داخل مدرستي/نور يرى Floating Button: "إضافة شاهد"
+B) عند الضغط:
+   - يفتح Quick Capture Modal (ضمن Side Panel أو overlay)
+   - خيارات الالتقاط:
+     1) Screenshot للجزء المرئي (captureVisibleTab)
+     2) رفع ملف (PDF/IMG/DOCX)
+     3) رابط + وصف
+     4) ملاحظة نصية
+   - يتم إضافة Metadata تلقائياً: (الرابط، اسم الصفحة، التاريخ/الوقت، المنصة: مدرستي/نور)
+C) ثم Tagging:
+   - اختيار: المجال -> المعيار -> المؤشر (Search + Favorites)
+   - اختيار نوع الشاهد: (تخطيط / تنفيذ / متابعة / أثر)
+   - اختيار: مرتبط بمهمة؟ (اختياري) أو إنشاء مهمة فورية
+D) حفظ:
+   - Upload للـBackend (multipart)
+   - إذا offline: حفظ في queue مع علامة "Pending Sync"
+
+4) Evidence Center:
+- قائمة شواهد مع فلترة (حسب المجال/المؤشر/نوع الشاهد/الحالة)
+- حالات الشاهد:
+  Draft -> Submitted -> Reviewed -> Approved
+- سجل تدقيق (Audit log) لكل شاهد: من رفع/من راجع/التاريخ
+
+5) Tasks (إدارة تحسين فعلية):
+- إنشاء مهمة مرتبطة بمؤشر أو بخطة تحسين
+- خصائص المهمة:
+  title, description, due_date, assignee, status
+- Notifications داخل الامتداد:
+  overdue, due soon, evidence missing
+
+6) Export (مخرجات رسمية):
+A) تقارير PDF من الامتداد:
+- Export نطاق كامل / مجال واحد / مؤشر واحد
+- محتوى التقرير:
+  غلاف + بيانات المدرسة + فهرس
+  ثم صفحات المؤشرات: مستوى، ملاحظات، قائمة الشواهد وروابطها/QR
+
+B) (مهم جداً) تصدير "خطة التحسين" بشكل مطابق للنموذج الرسمي:
+- استخدم قالب Word DOCX رسمي محفوظ في الـBackend (Template ثابت).
+- عبّئ الحقول تماماً حسب الأقسام التالية:
+  1) أولاً/ البيانات الأساسية: اسم المدرسة، المرحلة، الجنس، الرقم الوزاري، نوع المبنى، الاستقلالية، الفترة، استقلالية الإدارة… (كما في النموذج)
+  2) مستوى الأداء العام + مستوى المدرسة في نواتج التعلم (آخر تقرير)
+  3) جدول إجراءات خطة التحسين بالأعمدة EXACT:
+     (المجال)
+     (العنصر/المكون/العملية المراد تحسينها)
+     (وصف الاحتياج)
+     (إجراءات التحسين)
+     (أساليب وطرق التحسين)
+     (مدة الإنجاز)
+     (التنفيذ والمسؤولية)
+  4) ثالثاً/ التوصيات والمقترحات + التواقيع + الختم
+
+- دعم صفوف ديناميكية: إذا زادت البنود عن صفوف القالب، يضيف Rows ويحافظ على نفس تنسيق الجدول والحدود RTL.
+
+7) UX/UI Requirements:
+- RTL كامل، خطوط عربية واضحة، واجهة بسيطة جداً
+- Quick Capture يجب ألا يتجاوز 3 نقرات من "إضافة شاهد" إلى "تم الحفظ"
+- Dashboard تعرض:
+  عدد الشواهد هذا الأسبوع، الشواهد المعلقة للمراجعة، المهام المتأخرة، آخر تصدير
+
+8) Data Model (في الـBackend + ما يعكسه الامتداد):
+- SchoolTenant
+- User (role)
+- Domain / Standard / Indicator
+- Evidence (file_url, type, status, indicator_id, task_id?, metadata)
+- Task (indicator_id?, due_date, status)
+- ExportJob (type: PDF/DOCX, scope, status, download_url)
+- AuditLog
+
+9) API Contract المطلوب (صممه واقترحه بوضوح داخل المشروع):
+- POST /auth/login
+- GET /me
+- GET /domains?include=standards,indicators
+- POST /evidence (multipart)
+- GET /evidence?filters...
+- PATCH /evidence/{id} (status transitions)
+- POST /tasks
+- GET /tasks
+- POST /export/pdf (scope)
+- POST /export/improvement-plan-docx (fills official template)
+- GET /export/{jobId}
+
+10) Security & Compliance:
+- لا تخزن بيانات حساسة للطلاب كنصوص داخل الامتداد.
+- عند رفع صور قد تحتوي طلاب: أضف تحذير + خيار “طمس يدوي” بسيط (crop/blur) إن أمكن في V1.1
+- تشفير النقل HTTPS + صلاحيات وصول للملفات على مستوى المدرسة.
+
+11) Deliverables (المخرجات التي أريدها من Lovable):
+- مشروع Extension كامل جاهز للتحميل Unpacked في Chrome
+- ملف README عربي: خطوات التشغيل، التحميل، وكيفية الربط بالـBackend
+- بيانات تجريبية Seed + حسابات Test
+- قائمة “Acceptance Criteria” واختبارات يدوية:
+  - يظهر Floating Button فقط داخل مدرستي/نور
+  - إضافة شاهد screenshot + ربطه بمؤشر + يظهر في Evidence Center
+  - Offline queue يعمل ثم sync
+  - تصدير PDF يعمل
+  - تصدير خطة التحسين DOCX مطابق للأعمدة والأقسام الرسمية RTL
+
+ابدأ التنفيذ فوراً: أنشئ هيكل الملفات + الواجهات + الـAPI mock (إن لم يوجد Backend) ثم اربطها بشكل قابل للتبديل 

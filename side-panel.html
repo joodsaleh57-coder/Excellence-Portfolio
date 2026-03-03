@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ملف التميز الرقمي</title>
+  <link rel="stylesheet" href="styles/side-panel.css">
+</head>
+<body>
+  <div id="side-panel-container">
+    <!-- Header -->
+    <header class="side-panel-header">
+      <h1>ملف التميز الرقمي</h1>
+      <button id="settings-btn" class="btn-icon" title="الإعدادات">⚙️</button>
+    </header>
+
+    <!-- Tab Navigation -->
+    <nav class="tab-navigation">
+      <button class="tab-btn active" data-tab="dashboard">لوحة التحكم</button>
+      <button class="tab-btn" data-tab="capture">إضافة شاهد</button>
+      <button class="tab-btn" data-tab="indicators">المؤشرات</button>
+      <button class="tab-btn" data-tab="tasks">المهام</button>
+      <button class="tab-btn" data-tab="evidence">الشواهد</button>
+      <button class="tab-btn" data-tab="export">التصدير</button>
+    </nav>
+
+    <!-- Tab Content -->
+    <main class="tab-content">
+      <!-- Dashboard Tab -->
+      <section id="dashboard" class="tab-pane active">
+        <div class="dashboard-container">
+          <h2>لوحة التحكم</h2>
+          
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">📊</div>
+              <div class="stat-info">
+                <div class="stat-label">شواهد هذا الأسبوع</div>
+                <div class="stat-value" id="stat-weekly">0</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon">⏳</div>
+              <div class="stat-info">
+                <div class="stat-label">معلقة للمراجعة</div>
+                <div class="stat-value" id="stat-pending">0</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon">⚠️</div>
+              <div class="stat-info">
+                <div class="stat-label">مهام متأخرة</div>
+                <div class="stat-value" id="stat-overdue">0</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon">✅</div>
+              <div class="stat-info">
+                <div class="stat-label">آخر تصدير</div>
+                <div class="stat-value" id="stat-last-export">-</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="recent-activity">
+            <h3>النشاط الأخير</h3>
+            <div id="activity-list" class="activity-list">
+              <p class="empty-state">لا توجد أنشطة حالياً</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Capture Evidence Tab -->
+      <section id="capture" class="tab-pane">
+        <div class="capture-container">
+          <h2>إضافة شاهد جديد</h2>
+          
+          <form id="capture-form">
+            <!-- Evidence Type Selection -->
+            <div class="form-section">
+              <label>نوع الشاهد</label>
+              <div class="evidence-type-selector">
+                <button type="button" class="type-btn active" data-type="screenshot">
+                  📸 لقطة شاشة
+                </button>
+                <button type="button" class="type-btn" data-type="file">
+                  📄 ملف
+                </button>
+                <button type="button" class="type-btn" data-type="link">
+                  🔗 رابط
+                </button>
+                <button type="button" class="type-btn" data-type="note">
+                  📝 ملاحظة
+                </button>
+              </div>
+            </div>
+
+            <!-- Evidence Type Specific Fields -->
+            <div id="type-fields">
+              <!-- Screenshot -->
+              <div id="screenshot-fields" class="type-field-group active">
+                <div class="form-group">
+                  <label>المنطقة المراد التقاطها</label>
+                  <div class="screenshot-preview" id="screenshot-preview"></div>
+                  <button type="button" id="capture-btn" class="btn btn-secondary">
+                    التقط الشاشة
+                  </button>
+                </div>
+              </div>
+
+              <!-- File Upload -->
+              <div id="file-fields" class="type-field-group">
+                <div class="form-group">
+                  <label for="file-input">اختر ملف (PDF, صورة, مستند)</label>
+                  <input type="file" id="file-input" accept=".pdf,.jpg,.jpeg,.png,.docx,.doc">
+                  <div id="file-name" class="file-name"></div>
+                </div>
+              </div>
+
+              <!-- Link -->
+              <div id="link-fields" class="type-field-group">
+                <div class="form-group">
+                  <label for="link-input">الرابط</label>
+                  <input type="url" id="link-input" placeholder="https://example.com">
+                </div>
+              </div>
+
+              <!-- Note -->
+              <div id="note-fields" class="type-field-group">
+                <div class="form-group">
+                  <label for="note-input">الملاحظة</label>
+                  <textarea id="note-input" placeholder="أدخل ملاحظتك هنا..." rows="4"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Common Fields -->
+            <div class="form-section">
+              <div class="form-group">
+                <label for="description">الوصف (اختياري)</label>
+                <textarea id="description" placeholder="أضف وصفاً للشاهد..." rows="3"></textarea>
+              </div>
+            </div>
+
+            <!-- Tagging Section -->
+            <div class="form-section">
+              <h3>تصنيف الشاهد</h3>
+              
+              <div class="form-group">
+                <label for="domain-select">المجال</label>
+                <select id="domain-select" required>
+                  <option value="">اختر المجال...</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="standard-select">المعيار</label>
+                <select id="standard-select" required>
+                  <option value="">اختر المعيار...</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="indicator-select">المؤشر</label>
+                <select id="indicator-select" required>
+                  <option value="">اختر المؤشر...</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="evidence-category">فئة الشاهد</label>
+                <select id="evidence-category" required>
+                  <option value="">اختر الفئة...</option>
+                  <option value="planning">تخطيط</option>
+                  <option value="implementation">تنفيذ</option>
+                  <option value="monitoring">متابعة</option>
+                  <option value="impact">أثر</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Task Association -->
+            <div class="form-section">
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" id="link-task">
+                  ربط بمهمة
+                </label>
+              </div>
+
+              <div id="task-select-group" style="display: none;">
+                <div class="form-group">
+                  <label for="task-select">اختر المهمة</label>
+                  <select id="task-select">
+                    <option value="">اختر المهمة...</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit -->
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">حفظ الشاهد</button>
+              <button type="reset" class="btn btn-secondary">إلغاء</button>
+            </div>
+
+            <div id="capture-message" class="message" style="display: none;"></div>
+          </form>
+        </div>
+      </section>
+
+      <!-- Indicators Tab -->
+      <section id="indicators" class="tab-pane">
+        <div class="indicators-container">
+          <h2>المؤشرات</h2>
+          
+          <div class="filters">
+            <input type="text" id="indicator-search" placeholder="ابحث عن مؤشر...">
+            <select id="indicator-filter-domain">
+              <option value="">جميع المجالات</option>
+            </select>
+          </div>
+
+          <div id="indicators-list" class="indicators-list">
+            <p class="loading">جاري التحميل...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tasks Tab -->
+      <section id="tasks" class="tab-pane">
+        <div class="tasks-container">
+          <h2>المهام</h2>
+          
+          <div class="task-filters">
+            <button class="filter-btn active" data-filter="all">الكل</button>
+            <button class="filter-btn" data-filter="today">اليوم</button>
+            <button class="filter-btn" data-filter="week">هذا الأسبوع</button>
+            <button class="filter-btn" data-filter="overdue">متأخرة</button>
+          </div>
+
+          <div id="tasks-list" class="tasks-list">
+            <p class="loading">جاري التحميل...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Evidence Center Tab -->
+      <section id="evidence" class="tab-pane">
+        <div class="evidence-container">
+          <h2>مركز الشواهد</h2>
+          
+          <div class="evidence-filters">
+            <input type="text" id="evidence-search" placeholder="ابحث عن شاهد...">
+            
+            <select id="evidence-filter-status">
+              <option value="">جميع الحالات</option>
+              <option value="draft">مسودة</option>
+              <option value="submitted">مرسل</option>
+              <option value="reviewed">مراجع</option>
+              <option value="approved">موافق عليه</option>
+            </select>
+
+            <select id="evidence-filter-domain">
+              <option value="">جميع المجالات</option>
+            </select>
+          </div>
+
+          <div id="evidence-list" class="evidence-list">
+            <p class="loading">جاري التحميل...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Export Tab -->
+      <section id="export" class="tab-pane">
+        <div class="export-container">
+          <h2>تصدير التقارير</h2>
+          
+          <div class="export-section">
+            <h3>تصدير PDF</h3>
+            
+            <div class="form-group">
+              <label>نطاق التقرير</label>
+              <div class="export-scope-selector">
+                <label>
+                  <input type="radio" name="pdf-scope" value="full" checked>
+                  الملف الكامل للمدرسة
+                </label>
+                <label>
+                  <input type="radio" name="pdf-scope" value="domain">
+                  مجال واحد
+                </label>
+                <label>
+                  <input type="radio" name="pdf-scope" value="indicator">
+                  مؤشر واحد
+                </label>
+              </div>
+            </div>
+
+            <div id="pdf-scope-fields"></div>
+
+            <button id="export-pdf-btn" class="btn btn-primary">تصدير PDF</button>
+          </div>
+
+          <div class="export-section">
+            <h3>تصدير خطة التحسين (DOCX)</h3>
+            
+            <div class="form-group">
+              <label>اختر نطاق التقرير</label>
+              <select id="improvement-plan-scope">
+                <option value="">اختر...</option>
+                <option value="full">الملف الكامل</option>
+                <option value="domain">مجال واحد</option>
+              </select>
+            </div>
+
+            <button id="export-docx-btn" class="btn btn-primary">تصدير DOCX</button>
+          </div>
+
+          <div id="export-message" class="message" style="display: none;"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="side-panel.js"></script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Excellence Portfolio</title>
+  <link rel="stylesheet" href="styles/popup.css">
+</head>
+<body>
+  <div id="popup-container">
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen active">
+      <div class="logo-section">
+        <h1>ملف التميز الرقمي</h1>
+        <p>Excellence Portfolio</p>
+      </div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label for="email">البريد الإلكتروني</label>
+          <input type="email" id="email" name="email" placeholder="example@school.edu.sa" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">كلمة المرور</label>
+          <input type="password" id="password" name="password" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">دخول</button>
+      </form>
+
+      <div id="login-error" class="error-message" style="display: none;"></div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboard-screen" class="screen">
+      <div class="header">
+        <h2>لوحة التحكم</h2>
+        <button id="logout-btn" class="btn-icon">⚙️</button>
+      </div>
+
+      <div class="dashboard-stats">
+        <div class="stat-card">
+          <div class="stat-label">شواهد هذا الأسبوع</div>
+          <div class="stat-value" id="weekly-evidence">0</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">معلقة للمراجعة</div>
+          <div class="stat-value" id="pending-evidence">0</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">مهام متأخرة</div>
+          <div class="stat-value" id="overdue-tasks">0</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="open-panel-btn" class="btn btn-primary">فتح لوحة التحكم</button>
+        <button id="sync-btn" class="btn btn-secondary">مزامنة</button>
+      </div>
+
+      <div id="sync-status" class="sync-status" style="display: none;"></div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
